@@ -7,6 +7,14 @@ let score = 0;
 let myXPos = 250;
 let myYPos = 400;
 
+let enemySpeed = 1.5;
+
+let state = 'start screen';
+
+let ballSlider;
+let speedSlider;
+let startButton;
+
 function laser(x, y, speed) {
     laserArray.push(new Laser(x, y, speed));
 }
@@ -27,7 +35,32 @@ function setup() {
     rectMode(CENTER);
     noStroke();
 
-    for (let i = 0; i < 7; i++) {
+    ballSlider = createSlider(5, 15, 5, 1);
+    ballSlider.position(150, 220);
+    ballSlider.size(200);
+
+    speedSlider = createSlider(0.1, 5.0, 1.5, 0.1);
+    speedSlider.position(150, 310);
+    speedSlider.size(200);
+
+    startButton = createButton('go shoot stuf');
+    startButton.position(175, 380);
+    startButton.size(150, 40);
+    startButton.style('cursor', 'pointer');
+    startButton.mousePressed(startGame);
+}
+
+function startGame() {
+
+    startingBallCount = ballSlider.value();
+    enemySpeed = speedSlider.value();
+
+    ballSlider.hide();
+    speedSlider.hide();
+    startButton.hide();
+
+    ballArray = [];
+    for (let i = 0; i < startingBallCount; i++) {
         let tempx;
         let attempts = 0;
 
@@ -36,97 +69,138 @@ function setup() {
             attempts++;
         } while (overlap(tempx) && attempts < 100);
 
-        let temp = new Ball(tempx, random(-75, -25), random(0.1, 1));
+        let temp = new Ball(tempx, random(-75, -25), random(enemySpeed, enemySpeed + 1.5));
         ballArray.push(temp);
     }
+
+   
+    state = "game";
 }
 
 function draw() {
-    background(0, 0, 0, 40);
-    fill(255, 255, 255);
-    rect(myXPos, myYPos, 50, 50);
+    if (state === 'start screen') {
+        background(20, 20, 35); 
 
-    if (keyIsDown(LEFT_ARROW)) myXPos -= 3;
-    if (keyIsDown(RIGHT_ARROW)) myXPos += 3;
-    if (keyIsDown(UP_ARROW)) myYPos -= 3;
-    if (keyIsDown(DOWN_ARROW)) myYPos += 3;
-    
-    if (keyIsDown(83) && cooldown > 30) { // 'S' key
-        laser(myXPos, myYPos, 10);
-        cooldown = 0;
-    }
+     
+        fill(255);
+        textAlign(CENTER);
+        textSize(36);
+        text("Ball Shooty Thingy", 250, 100);
 
-    let myLeft = myXPos - 25;
-    let myRight = myXPos + 25;
-    let myTop = myYPos - 25;
-    let myBottom = myYPos + 25;
+        textSize(14);
+        fill(180);
+        text("u gotta dodge the red balls and then shoot them. \nu can shoot with s button n move with arrow keys", 250, 140);
 
-    for (let i = 0; i < ballArray.length; i++) {
-        let b = ballArray[i];
+   
+        fill(255);
+        textSize(18);
+        textAlign(LEFT);
+        text("ball amount: " + ballSlider.value(), 150, 210);
 
-        b.left = b.xPos - 25;
-        b.right = b.xPos + 25;
-        b.top = b.yPos - 25;
-        b.bottom = b.yPos + 25;
+  
+        text("ball fastness: " + speedSlider.value().toFixed(1) + "x", 150, 300);
 
-        if (!(myLeft > b.right || myRight < b.left || myTop > b.bottom || myBottom < b.top)) {
-            noLoop();
-            fill(255);
-            textSize(20);
-            textAlign(CENTER);
-            text("You lose to ball " + (i + 1) + "\nPress R to reset", 250, 460);
+    } else if (state === "game") {
+        background(0, 0, 0, 40);
+        fill(100, 255, 100);
+        rect(myXPos, myYPos, 50, 50);
+
+        if (keyIsDown(LEFT_ARROW)) myXPos -= 3;
+        if (keyIsDown(RIGHT_ARROW)) myXPos += 3;
+        if (keyIsDown(UP_ARROW)) myYPos -= 3;
+        if (keyIsDown(DOWN_ARROW)) myYPos += 3;
+        
+        if (keyIsDown(83) && cooldown > 30) { // 'S' key
+            laser(myXPos, myYPos, 10);
+            cooldown = 0;
         }
-    }
 
-    for (let i = ballArray.length-1; i >= 0; i--) {
-        for (let j = 0; j < laserArray.length; j++){
-            let b = ballArray[i];
-            let l = laserArray[j];
+        for (let i = 0; i < ballArray.length; i++) {
+            fill(255, 100, 100);
+            circle(ballArray[i].xPos, ballArray[i].yPos, 50);
 
-            l.left = l.xPos - 2.5;
-            l.right = l.xPos + 2.5;
-            l.top = l.yPos - 15;
-            l.bottom = l.yPos + 15;
+            ballArray[i].yPos += ballArray[i].speedValue;
 
-            if (!(l.left > b.right || l.right < b.left || l.top > b.bottom || l.bottom < b.top)) {
-                score +=5;
-                b.yPos = 526;
+            if (ballArray[i].yPos > 525) {
+                let tempx;
+                let attempts = 0;
+                ballArray[i].yPos = -25;
+                ballArray[i].speedValue = random(enemySpeed, enemySpeed + 1.5);
+                do {
+                    tempx = random(25, 475);
+                    attempts++;
+                } while (overlap(tempx) && attempts < 100);
+                ballArray[i].xPos = tempx;
             }
         }
-    }
 
-    for (let i = 0; i < ballArray.length; i++) {
-        fill(255, 255, 255);
-        circle(ballArray[i].xPos, ballArray[i].yPos, 50);
+        let myLeft = myXPos - 25;
+        let myRight = myXPos + 25;
+        let myTop = myYPos - 25;
+        let myBottom = myYPos + 25;
 
-        ballArray[i].yPos += ballArray[i].speedValue;
+        for (let i = 0; i < ballArray.length; i++) {
+            let b = ballArray[i];
 
-        if (ballArray[i].yPos > 525) {
-            ballArray[i].yPos = -25;
-            ballArray[i].speedValue = random(0.5, 1);
-            ballArray[i].xPos = random(0, 500);
+            b.left = b.xPos - 21;
+            b.right = b.xPos + 21;
+            b.top = b.yPos - 21;
+            b.bottom = b.yPos + 21;
+
+            if (!(myLeft > b.right || myRight < b.left || myTop > b.bottom || myBottom < b.top)) {
+                noLoop();
+                fill(255);
+                textSize(20);
+                textAlign(CENTER);
+                text("You lose to ball " + (i + 1) + "\nPress R to reset", 250, 460);
+            }
         }
-    }
 
-    for (let i = laserArray.length - 1; i >= 0; i--) {
-        fill(255, 0, 0);
-        rect(laserArray[i].xPos, laserArray[i].yPos, 5, 30);
+        for (let i = ballArray.length - 1; i >= 0; i--) {
+            for (let j = 0; j < laserArray.length; j++) {
+                let b = ballArray[i];
+                let l = laserArray[j];
 
-        laserArray[i].yPos -= laserArray[i].speedValue;
+                l.left = l.xPos - 2.5;
+                l.right = l.xPos + 2.5;
+                l.top = l.yPos - 15;
+                l.bottom = l.yPos + 15;
 
-        if (laserArray[i].yPos < -30) {
-            laserArray.splice(i, 1);
+                if (!(l.left > b.right || l.right < b.left || l.top > b.bottom || l.bottom < b.top)) {
+                    score += 5;
+                    b.yPos = 526;
+                }
+            }
         }
+
+        for (let i = laserArray.length - 1; i >= 0; i--) {
+            fill(255, 0, 0);
+            rect(laserArray[i].xPos, laserArray[i].yPos, 5, 30);
+
+            laserArray[i].yPos -= laserArray[i].speedValue;
+
+            if (laserArray[i].yPos < -30) {
+                laserArray.splice(i, 1);
+            }
+        }
+
+        // Your centered black background box from earlier
+        fill(0);
+        rect(60, 17, 120, 30);
+        fill(255);
+        textAlign(LEFT);
+        textSize(20);
+        text("Score: " + score, 10, 25);
+
+        myXPos = constrain(myXPos, 25, 475);
+        myYPos = constrain(myYPos, 350, 475);
+
+        cooldown++;
     }
-
-    myXPos = constrain(myXPos, 25, 475);
-    myYPos = constrain(myYPos, 25, 475);
-
-    cooldown++;
 }
 
 function keyPressed() {
-    if (key === "p" || key === "P") {
+    if ((key === "p" || key === "P") && state === 'game') {
         paused = !paused;
         if (paused) {
             noLoop();
@@ -135,7 +209,7 @@ function keyPressed() {
         }
     }
 
-    if (key === "r" || key === "R") {
+    if ((key === "r" || key === "R") && state === 'game') {
         score = 0;
         myXPos = 250;
         myYPos = 400;
@@ -150,7 +224,7 @@ function keyPressed() {
                 attempts++;
             } while (overlap(tempx) && attempts < 100);
 
-            let temp = new Ball(tempx, random(-75, -25), random(0.1, 1));
+            let temp = new Ball(tempx, random(-75, -25), random(enemySpeed, enemySpeed + 1.5));
             ballArray.push(temp);
         }
         paused = false;
@@ -158,15 +232,19 @@ function keyPressed() {
     }
 }
 
+function mouseClicked(){
+
+}
+
 class Ball {
     constructor(x, y, speed) {
         this.xPos = x;
         this.yPos = y;
         this.speedValue = speed;
-        this.left = this.xPos - 25;
-        this.right = this.xPos + 25;
-        this.top = this.yPos - 25;
-        this.bottom = this.yPos + 25;
+        this.left = this.xPos - 21;
+        this.right = this.xPos + 21;
+        this.top = this.yPos - 21;
+        this.bottom = this.yPos + 21;
     }
 }
 
