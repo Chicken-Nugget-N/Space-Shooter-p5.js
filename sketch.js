@@ -1,3 +1,5 @@
+
+
 let ballArray = [];
 let paused;
 let laserArray = [];
@@ -30,24 +32,28 @@ function overlap(a) {
 }
 
 function setup() {
-    createCanvas(500, 500);
+    let myCanvas = createCanvas(500, 500);
     frameRate(60);
     rectMode(CENTER);
     noStroke();
+    myCanvas.parent('canvas-holder');
 
     startScreen();
 }
 
 function startScreen(){
     ballSlider = createSlider(5, 15, 5, 1);
+    ballSlider.parent('canvas-holder');
     ballSlider.position(150, 220);
     ballSlider.size(200);
 
     speedSlider = createSlider(0.1, 5.0, 1.5, 0.1);
+    speedSlider.parent('canvas-holder');
     speedSlider.position(150, 310);
     speedSlider.size(200);
 
     startButton = createButton('go shoot stuf');
+    startButton.parent('canvas-holder');
     startButton.position(175, 380);
     startButton.size(150, 40);
     startButton.style('cursor', 'pointer');
