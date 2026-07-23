@@ -46,8 +46,35 @@ function draw() {
         laser(myXPos,myYPos,10);
         cooldown = 0;
     } 
+    let myLeft = myXPos - 25;
+    let myRight = myXPos + 25;
+    let myTop = myYPos - 25;
+    let myBottom = myYPos + 25;
+
+    
 
 
+    for (let i = 0; i < ballArray.length; i++) {
+        let b = ballArray[i];   
+
+        b.left = b.xPos - 25;
+        b.right = b.xPos + 25;
+        b.top = b.yPos - 25;
+        b.bottom = b.yPos + 25; 
+
+        if (!(myLeft > b.right ||
+              myRight < b.left ||
+              myTop > b.bottom ||
+              myBottom < b.top)) {
+
+            noLoop();
+            fill(255);
+            textSize(20);
+            textAlign(CENTER);
+            text("You lose to ball " + (i + 1) + "\nPress R to reset", 250, 460);
+
+    }
+}
 
 
 
