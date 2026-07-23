@@ -220,7 +220,7 @@ function keyPressed() {
         ballArray.length = 0;
         laserArray.length = 0;
 
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < startingBallCount; i++) {
             let tempx;
             let attempts = 0;
             do {
