@@ -93,7 +93,7 @@ function draw() {
 
         textSize(14);
         fill(180);
-        text("u gotta dodge the red balls and then shoot them. \nu can shoot with s button n move with arrow keys", 250, 140);
+        text("u gotta dodge the red balls and then shoot them. \nu can shoot with s button n move with arrow keys\nand u use p to pause.", 250, 140);
 
    
         fill(255);
