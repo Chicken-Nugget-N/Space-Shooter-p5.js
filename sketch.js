@@ -78,6 +78,23 @@ function draw() {
         }
     }
 
+    for (let i = ballArray.length-1; i >= 0; i--) {
+        for (let j = 0; j < laserArray.length; j++){
+            let b = ballArray[i];
+            let l = laserArray[j];
+
+            l.left = l.xPos - 2.5;
+            l.right = l.xPos + 2.5;
+            l.top = l.yPos - 15;
+            l.bottom = l.yPos + 15;
+
+            if (!(l.left > b.right || l.right < b.left || l.top > b.bottom || l.bottom < b.top)) {
+                score +=5;
+                b.yPos = 526;
+            }
+        }
+    }
+
     for (let i = 0; i < ballArray.length; i++) {
         fill(255, 255, 255);
         circle(ballArray[i].xPos, ballArray[i].yPos, 50);
