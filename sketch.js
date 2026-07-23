@@ -35,6 +35,10 @@ function setup() {
     rectMode(CENTER);
     noStroke();
 
+    startScreen();
+}
+
+function startScreen(){
     ballSlider = createSlider(5, 15, 5, 1);
     ballSlider.position(150, 220);
     ballSlider.size(200);
@@ -152,7 +156,7 @@ function draw() {
                 fill(255);
                 textSize(20);
                 textAlign(CENTER);
-                text("You lose to ball " + (i + 1) + "\nPress R to reset", 250, 460);
+                text("You lose to ball " + (i + 1) + "\nPress r for quick reset\nPress shift r to go to start screen", 250, 440);
             }
         }
 
@@ -209,7 +213,7 @@ function keyPressed() {
         }
     }
 
-    if ((key === "r" || key === "R") && state === 'game') {
+    if ((key === "r") && state === 'game') {
         score = 0;
         myXPos = 250;
         myYPos = 400;
@@ -227,6 +231,12 @@ function keyPressed() {
             let temp = new Ball(tempx, random(-75, -25), random(enemySpeed, enemySpeed + 1.5));
             ballArray.push(temp);
         }
+        paused = false;
+        loop();
+    }
+    if(key === "R") {
+        state = 'start screen';
+        startScreen();
         paused = false;
         loop();
     }
