@@ -213,6 +213,10 @@ function draw() {
 }
 
 function keyPressed() {
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(key)) {
+        return false;
+    }
+
     if ((key === "p" || key === "P") && state === 'game') {
         paused = !paused;
         if (paused) {
